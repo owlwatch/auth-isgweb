@@ -645,6 +645,7 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
         error_log( print_r( $_REQUEST, 1 ) );
 
         if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'logout') {
+            $_REQUEST['redirect_to'] = home_url();
             return;
         }
 
