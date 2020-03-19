@@ -10,7 +10,7 @@ License: GPLv2 or later
 */
 
 function init_isgweb_auth(){
-  
+
   if( class_exists('ISGwebAuth_Plugin') ){
     return;
   }
@@ -29,19 +29,20 @@ function init_isgweb_auth(){
     });
     return;
   }
-  
+
   define( 'ISGWEB_AUTH_DIR', dirname(__FILE__) );
   define( 'ISGWEB_AUTH_URL', plugins_url('/', __FILE__) );
-  
+
   Snap_Loader::register('ISGwebAuth', ISGWEB_AUTH_DIR.'/lib');
   Snap::inst('ISGwebAuth_Plugin');
-  
+
 }
+
 
 add_action('plugins_loaded', 'init_isgweb_auth');
 
 
-if ( !function_exists('wp_validate_auth_cookie') ){
+if ( 'sync' !== get_site_option( 'isgweb_type' ) && !function_exists('wp_validate_auth_cookie') ){
   /**
    * Validates authentication cookie.
    *
@@ -84,18 +85,18 @@ if ( !function_exists('wp_validate_auth_cookie') ){
       do_action( 'auth_cookie_malformed', $cookie, $scheme );
       return false;
     }
-  
+
     $scheme = $cookie_elements['scheme'];
     $username = $cookie_elements['username'];
     $hmac = $cookie_elements['hmac'];
     $token = $cookie_elements['token'];
     $expired = $expiration = $cookie_elements['expiration'];
-  
+
     // Allow a grace period for POST and AJAX requests
     if ( defined('DOING_AJAX') || 'POST' == $_SERVER['REQUEST_METHOD'] ) {
       $expired += HOUR_IN_SECONDS;
     }
-  
+
     // Quick check to see if an honest cookie has expired
     if ( $expired < time() ) {
       /**
@@ -108,7 +109,7 @@ if ( !function_exists('wp_validate_auth_cookie') ){
       do_action( 'auth_cookie_expired', $cookie_elements );
       return false;
     }
-  
+
     $user = get_user_by('login', $username);
     if ( ! $user ) {
       /**
@@ -121,12 +122,12 @@ if ( !function_exists('wp_validate_auth_cookie') ){
       do_action( 'auth_cookie_bad_username', $cookie_elements );
       return false;
     }
-  
+
     $pass_frag = substr($user->user_pass, 8, 4);
-  
+
     $key = wp_hash( $username . '|' . $pass_frag . '|' . $expiration . '|' . $token, $scheme );
     $hash = hash_hmac( 'sha256', $username . '|' . $expiration . '|' . $token, $key );
-  
+
     if ( ! hash_equals( $hash, $hmac ) ) {
       /**
        * Fires if a bad authentication cookie hash is encountered.
@@ -138,18 +139,18 @@ if ( !function_exists('wp_validate_auth_cookie') ){
       do_action( 'auth_cookie_bad_hash', $cookie_elements );
       return false;
     }
-  
+
     $manager = WP_Session_Tokens::get_instance( $user->ID );
     if ( ! $manager->verify( $token ) ) {
       do_action( 'auth_cookie_bad_session_token', $cookie_elements );
       return false;
     }
-  
+
     // AJAX/POST grace period set above
     if ( $expiration < time() ) {
       $GLOBALS['login_grace_period'] = 1;
     }
-  
+
     /**
      * Fires once an authentication cookie has been validated.
      *
