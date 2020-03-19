@@ -138,12 +138,12 @@ class ISGwebAuth_Wrapper
   private function call($service, $method, $params)
   {
     $socketTimeout = ini_set('default_socket_timeout', 20);
-    
+
     // Set SOAP request
     $params['securityPassword']   = $this->wsdlKeys[$service];
     $request                      = array('parameters' => $params);
     $response                     = NULL;
-    
+
     $start = microtime(true);
 
     // Get SOAP response
@@ -182,8 +182,8 @@ class ISGwebAuth_Wrapper
       throw new ISGwebAuth_Exception_Timeout();
     }
     ini_set('default_socket_timeout', $socketTimeout);
-    error_log( $_SERVER['REMOTE_ADDR'].' - ISGweb '.$method.' time: '. number_format( (microtime(true)-$start), 2).'s' );
-    
+    //error_log( $_SERVER['REMOTE_ADDR'].' - ISGweb '.$method.' time: '. number_format( (microtime(true)-$start), 2).'s' );
+
     // Process response
     $data = NULL;
 
@@ -197,7 +197,7 @@ class ISGwebAuth_Wrapper
       // simplexml_load_string doesn't spit out "Extra content at the
       // end of the document" error
       $response  = preg_replace(array('/encoding="UTF-16"/i', '/iBridge/i'), array('encoding="UTF-8"', 'ibridge'), $response);
-      
+
       libxml_use_internal_errors(TRUE);
       xml_parse_into_struct($parser, $response, $values, $map);
       xml_parser_free($parser);
@@ -217,7 +217,7 @@ class ISGwebAuth_Wrapper
       }
 
       $data = $this->objectToArray($obj);
-      
+
       // Check for ISGweb errors (e.g. invalid data input,
       // failure of service, etc.)
       if (array_key_exists('Errors', $data)) {
