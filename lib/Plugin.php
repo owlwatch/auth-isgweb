@@ -611,27 +611,27 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
         );
     }
 
-    /**
-     * @wp.filter option_saml_logout_url
-     */
-    public function capture_saml_logout($value)
-    {
-        $this->_is_logging_out = true;
-        return $value;
-    }
+    // /**
+    //  * @wp.filter option_saml_logout_url
+    //  */
+    // public function capture_saml_logout($value)
+    // {
+    //     $this->_is_logging_out = true;
+    //     return $value;
+    // }
 
-    /**
-     * @wp.filter pre_option_mo_saml_sp_base_url
-     */
-    public function saml_slo_relay($value)
-    {
-        if ($this->_is_logging_out && isset($_REQUEST['redirect_to'])) {
-            return $_REQUEST['redirect_to'];
-        } elseif ($this->is_logging_out) {
-            return home_url();
-        }
-        return $value;
-    }
+    // /**
+    //  * @wp.filter pre_option_mo_saml_sp_base_url
+    //  */
+    // public function saml_slo_relay($value)
+    // {
+    //     if ($this->_is_logging_out && isset($_REQUEST['redirect_to'])) {
+    //         return $_REQUEST['redirect_to'];
+    //     } elseif ($this->is_logging_out) {
+    //         return home_url();
+    //     }
+    //     return $value;
+    // }
 
     /**
      * @wp.action init
