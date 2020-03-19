@@ -642,14 +642,13 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
             return;
         }
 
-        error_log( print_r( $_REQUEST, 1 ) );
-
         if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'logout') {
-            $_REQUEST['redirect_to'] = home_url();
+            $_REQUEST['redirect_to'] = '/?saml_relay='.urlencode( home_url() );
             return;
         }
 
         if (isset($_REQUEST['redirect_to'])) {
+            $_REQUEST['redirect_to'] = '/?saml_relay='.urlencode( $_REQUEST['redirect_to'] );
             return;
         }
 
@@ -658,9 +657,22 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
             if (strpos( $url, '/' ) === 0) {
                 $url = home_url( $url );
             }
-            $_REQUEST['redirect_to'] = $url;
+            //$_REQUEST['redirect_to'] = $url;
+            $_REQUEST['redirect_to'] = '/?saml_relay='.urlencode( $url );
         } else {
-            $_REQUEST['redirect_to'] = home_url();
+            //$_REQUEST['redirect_to'] = home_url();
+            $_REQUEST['redirect_to'] = '/?saml_relay='.home_url();
+        }
+    }
+
+    /**
+     * @wp.action init
+     */
+    public function saml_relay()
+    {
+        if( isset( $_REQUEST['saml_relay'] ) ){
+            wp_redirect( $_REQUEST['saml_relay'] );
+            exit;
         }
     }
 
