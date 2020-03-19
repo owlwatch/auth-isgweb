@@ -39,6 +39,7 @@ class iSGwebAuth_IMISWrapper
         // this should be a string...
         if (!$response || !is_string($response)) {
             throw new ISGwebAuth_Exception_InvalidCredentials("The username or password you provided are invalid.");
+<<<<<<< HEAD
         }
 
         $user = [];
@@ -57,6 +58,26 @@ class iSGwebAuth_IMISWrapper
             throw new ISGwebAuth_Exception_InvalidCredentials("The username or password you provided are invalid.");
         }
 
+=======
+        }
+
+        $user = [];
+
+        $user['USER_COOKIE'] = $response;
+
+        // lets also create a cookie jar
+        $cookies = array_map(function ($str) {
+            list($key, $value) = explode('=', $str, 2);
+            return compact('key', 'value');
+        }, explode('|', $response));
+
+        $username = $this->call('Membership', 'GetUserName', '', $cookies);
+
+        if (!$username || !is_string($username)) {
+            throw new ISGwebAuth_Exception_InvalidCredentials("The username or password you provided are invalid.");
+        }
+
+>>>>>>> 6adf5a73ed7e035c912f77e9f688d8249fbe3c56
         $response = $this->call('Query', 'GetResultsWithParameters', [
             'queryPath' => '$/_ASA_IQA/SSO/UserDataStub',
             'parameters' => $username,
@@ -170,6 +191,7 @@ class iSGwebAuth_IMISWrapper
         $response = null;
 
         $start = microtime(true);
+<<<<<<< HEAD
 
         // Get SOAP response
 
@@ -244,6 +266,56 @@ class iSGwebAuth_IMISWrapper
         } catch (Exception $e) {
             error_log( print_r( $e->getTrace(), 1 ) );
         }
+=======
+
+        // Get SOAP response
+
+        $url = $this->wsdlRoot . $this->wsdlKeys[$service] . '.asmx?wsdl';
+
+
+        $client = new SoapClient($url, array(
+            'cache_wsdl'    => WSDL_CACHE_DISK,
+            //'timeout'       => 2000,
+            'compression'   => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP,
+            'trace'         => true,
+            'exceptions'    => true,
+            'cookies'       => '',
+            'keep_alive'    => true,
+        ));
+
+        try {
+            if ($cookies && count($cookies)) {
+                foreach ($cookies as $cookie) {
+                    $client->__setCookie($cookie['key'], $cookie['value']);
+                }
+            }
+            $response = $client->__soapCall($method, $request);
+            $response = (string) $client->__getLastResponse();
+
+            //print_r( $response );
+
+
+        // A note on why we're not using $client->__soapCall() response:
+        //   The PHP SOAP client was choking on the ~85K records that were
+        //   being returned in the SOAP response. It was able to pull back
+        //   the raw data, but failed consistently when there were more
+        //   than a few thousand records involved. As such, we're directly
+        //   processing the raw XML below.
+        } catch (SoapFault $e1) {
+            ini_set('default_socket_timeout', $socketTimeout);
+            $this->errors[] = $e1->getMessage();
+            error_log( print_r( ['SoapFault'=> $e1 ], 1 ));
+            error_log($_SERVER['REMOTE_ADDR'].' - ISGwebAuth_ExceptionTimeout '.$method.' time: '. number_format((microtime(true)-$start), 2).'s');
+            throw new ISGwebAuth_Exception_Timeout();
+        } catch (Exception $e2) {
+            ini_set('default_socket_timeout', $socketTimeout);
+            $this->errors[] = $e2->getMessage();
+            error_log($_SERVER['REMOTE_ADDR'].' - ISGwebAuth_ExceptionTimeout '.$method.' time: '. number_format((microtime(true)-$start), 2).'s');
+            throw new ISGwebAuth_Exception_Timeout();
+        }
+        ini_set('default_socket_timeout', $socketTimeout);
+        error_log($_SERVER['REMOTE_ADDR'].' - ISGweb '.$method.' time: '. number_format((microtime(true)-$start), 2).'s');
+>>>>>>> 6adf5a73ed7e035c912f77e9f688d8249fbe3c56
 
         // Process response
         $data = null;
