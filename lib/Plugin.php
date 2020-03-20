@@ -643,7 +643,7 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
         }
 
         if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'logout') {
-            $_REQUEST['_wp_http_referer'] = '/?saml_relay='.urlencode( home_url() );
+            $_REQUEST['_wp_http_referer'] = home_url().'?saml_relay='.urlencode( home_url() );
             return;
         }
 
