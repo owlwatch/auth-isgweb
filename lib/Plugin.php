@@ -354,7 +354,7 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
         } catch (ISGwebAuth_Exception_InvalidToken $e) {
             error_log($_SERVER['REMOTE_ADDR'].' - ISGwebAuth_Exception_InvalidToken');
             // lets delete that token
-            setcookie('Token', null, -1, '/', get_site_option('isgweb_cookie_domain'));
+            setcookie('Token', null, -1, COOKIEPATH, get_site_option('isgweb_cookie_domain'));
             return false;
         } catch (ISGwebAuth_Exception_Timeout $e) {
             $this->_remoteTimeout = true;
@@ -496,7 +496,7 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
             }
 
             if ($value) {
-                setcookie($name, $value, time() + (60 * 60 * 24 * 14), '/', $cookie_domain);
+                setcookie($name, $value, time() + (60 * 60 * 24 * 14), COOKIEPATH, $cookie_domain);
             }
         }
     }
@@ -519,8 +519,8 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
 
         $cookie_domain = get_site_option('isgweb_cookie_domain');
         foreach (array('Token','ASP.NET_SessionId','LOGINSESSIONID','Login','iMIS_Login') as $cookie) {
-            setcookie($cookie, '', time() - (60 * 60 * 24 * 100), '/', $cookie_domain);
-            setcookie($cookie, '', time() - (60 * 60 * 24 * 100), '/', COOKIE_DOMAIN);
+            setcookie($cookie, '', time() - (60 * 60 * 24 * 100), COOKIEPATH, $cookie_domain);
+            setcookie($cookie, '', time() - (60 * 60 * 24 * 100), COOKIEPATH, COOKIE_DOMAIN);
         }
     }
 
