@@ -161,7 +161,7 @@ class iSGwebAuth_IMISWrapper
     /**
      * Internal utility methods
      */
-    private function call($service, $method, $params, $cookies = null)
+    private function call($service, $method, $params, $cookies = null, $return='array')
     {
         $timeout = get_site_option('imis_timeout');
         $socketTimeout = ini_set('default_socket_timeout', $timeout ?: 10 );
@@ -222,7 +222,9 @@ class iSGwebAuth_IMISWrapper
         // Process response
         $data = null;
 
-
+        if( $return == 'string' ){
+            return $response;
+        }
 
         // Some ISGweb methods return strings instead of XML
         if (strpos($response, '<') == 0 && strpos( $response, '<'.$method.'Result>' ) > -1) {
