@@ -97,7 +97,7 @@ class iSGwebAuth_IMISWrapper
             }, explode('|', $response));
 
 
-            set_transient('imis_login', $cookies, 60 * 60 * 24);
+            set_transient('imis_login', $cookies, 60 * 60 * 0.5 );
         }
 
         return $cookies;
