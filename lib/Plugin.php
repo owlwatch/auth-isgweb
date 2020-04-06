@@ -247,6 +247,7 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
         }
         if (($type === 'imis' || $type === 'both')) {
             $result = $this->get_imis_wrapper()->getCurrentUser();
+
             if ($result && isset($result['EMAIL'])) {
                 $user = $this->get_user($result);
                 if ($user && !is_wp_error($user)) {
@@ -282,7 +283,17 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
         }
         $wrapper = $this->get_imis_wrapper();
         try {
-            $result = $wrapper->getUserById(get_user_meta($user_id, 'ID', true));
+            $ID = get_user_meta($user_id, 'ID', true);
+            $result = $wrapper->getUserById($ID);
+            error_log( 
+                print_r([
+                    'imis sync' => [
+                        'wordpress id' => $user_id,
+                        'IMIS ID' => $ID,
+                        'result' => $result
+                    ]
+                ], true)
+            );
             if ($result) {
                 foreach ($result as $key => $value) {
                     update_user_meta($user_id, $key, $value);
@@ -648,7 +659,7 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
         }
 
         if (isset($_REQUEST['redirect_to'])) {
-            $_REQUEST['redirect_to'] = '/?saml_relay='.urlencode( $_REQUEST['redirect_to'] );
+            $_REQUEST['redirect_to'] = '/?saml_relay='.urlencode( remove_query_arg( $_REQUEST['redirect_to'] );
             return;
         }
 
