@@ -37,6 +37,15 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
     }
 
     /**
+     * @wp.filter body_class
+     */
+    public function add_user_id_to_body_classes( $classes )
+    {
+        $classes[] = 'user-id-'.get_current_user_id();
+        return $classes;
+    }
+
+    /**
      * @wp.action init
      * @wp.priority 1
      */
