@@ -294,17 +294,17 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
             $imisID = get_user_meta($user_id, 'ID', true);
             $result = $wrapper->getUserById($imisID);
             
-            // error_log( 
-            //     print_r(
-            //         [
-            //             'action' => 'imis sync',
-            //             'wp id' => $user_id,
-            //             'imis ID' => $imisID,
-            //             'result' => $result
-            //         ], 
-            //         true
-            //     )
-            // );
+            error_log( 
+                print_r(
+                    [
+                        'action' => 'imis sync',
+                        'wp id' => $user_id,
+                        'imis ID' => $imisID,
+                        'result' => $result
+                    ], 
+                    true
+                )
+            );
             
             if ($result) {
                 foreach ($result as $key => $value) {
