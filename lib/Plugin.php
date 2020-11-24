@@ -37,6 +37,69 @@ class ISGwebAuth_Plugin extends Snap_Wordpress_Plugin
     }
 
     /**
+     * @wp.action 
+     */
+    public function set_auth_cookie( $auth_cookie, $expire, $expiration, $user_id, $scheme, $token )
+    {
+        $secure = apply_filters( 'secure_auth_cookie', true, $user_id );
+        if ( $secure ) {
+			$auth_cookie_name = SECURE_AUTH_COOKIE;
+		} else {
+			$auth_cookie_name = AUTH_COOKIE;
+		}
+        setcookie( $auth_cookie_name, $auth_cookie, [
+            'expires' => $expire, 
+            'path' => PLUGINS_COOKIE_PATH, 
+            'domain' => COOKIE_DOMAIN, 
+            'secure' => true, 
+            'httponly' => true,
+            'samesite' => 'None'
+        ]);
+        setcookie( $auth_cookie_name, $auth_cookie, [
+            'expires' => $expire, 
+            'path' => ADMIN_COOKIE_PATH, 
+            'domain' => COOKIE_DOMAIN, 
+            'secure' => true, 
+            'httponly' => true,
+            'samesite' => 'None'
+        ]);
+    }
+
+    /**
+     * @wp.action 
+     */
+    public function set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id, $scheme, $token )
+    {
+
+        setcookie( LOGGED_IN_COOKIE, $logged_in_cookie, [
+            'expires' => $expire, 
+            'path' => COOKIEPATH, 
+            'domain' => COOKIE_DOMAIN, 
+            'secure' => true, 
+            'httponly' => true,
+            'samesite' => 'None'
+        ]);
+        if ( COOKIEPATH != SITECOOKIEPATH ) {
+            setcookie( LOGGED_IN_COOKIE, $logged_in_cookie, [
+                'expires' => $expire, 
+                'path' => SITECOOKIEPATH, 
+                'domain' => COOKIE_DOMAIN, 
+                'secure' => true, 
+                'httponly' => true,
+                'samesite' => 'None'
+            ]);
+        }
+    }
+
+    /**
+     * @wp.filter
+     */
+    public function send_auth_cookies( $val ){
+        error_log('do not send auth cookies');
+        return false;
+    }
+
+    /**
      * @wp.filter body_class
      */
     public function add_user_id_to_body_classes( $classes )
